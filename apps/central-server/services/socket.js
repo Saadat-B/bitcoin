@@ -15,6 +15,9 @@ class SocketService {
       socket.on("event:message", (message) => {
         console.log("New Message Rec.", message);
       });
+      socket.on("miner:ready", (message) => {
+        console.log("Miner ready", message);
+      });
     });
   }
 
