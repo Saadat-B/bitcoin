@@ -46,10 +46,10 @@ class Ledger {
   }
 
   // Method to process a transaction (placeholder for actual logic)
-  processTransaction(transaction) {
+//   processTransaction(transaction) {
     // Implement transaction validation and processing logic
     // This will involve updating the UTXO set or other relevant state
-  }
+//   }
 }
 
 export default Ledger;
