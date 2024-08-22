@@ -3,6 +3,7 @@ import Block from "./block.js";
 class Ledger {
   constructor() {
     this.chain = [Block.createGenesisBlock()]; // Initialize with the genesis block
+    this.utxos = {}; // UTXO set, key is txid:outputIndex, value is the UTXO
   }
 
   // Method to get the latest block in the chain
@@ -13,6 +14,8 @@ class Ledger {
   // Method to handle a new block from a miner
   receiveBlock(newBlock) {
     if (this.isBlockValid(newBlock)) {
+      // Update UTXO set before adding the block
+      this.updateUTXOSet(newBlock);
       this.chain.push(newBlock);
       console.log("Block added:", newBlock);
     } else {
@@ -45,11 +48,60 @@ class Ledger {
     return block.isValid() && block.previousHash === this.getLatestBlock().hash;
   }
 
+  createUTXOs(transaction) {
+    transaction.outputs.forEach((output, index) => {
+      const utxoKey = `${transaction.id}:${index}`;
+      this.utxos[utxoKey] = output;
+    });
+  }
+  updateUTXOSet(block) {
+    for (let transaction of block.transactions) {
+      // Remove spent UTXOs
+      for (let input of transaction.inputs) {
+        const utxoKey = `${input.txid}:${input.index}`;
+        delete this.utxos[utxoKey];
+      }
+
+      // Add new UTXOs
+      this.createUTXOs(transaction);
+    }
+  }
+
+  validateTransaction(transaction) {
+    let inputSum = 0;
+    let outputSum = 0;
+
+    // Validate inputs
+    for (let input of transaction.inputs) {
+      const utxoKey = `${input.txid}:${input.index}`;
+      const utxo = this.utxos[utxoKey];
+
+      if (!utxo) {
+        console.log(`Invalid transaction: UTXO ${utxoKey} does not exist`);
+        return false;
+      }
+
+      inputSum += utxo.amount;
+    }
+
+    // Validate outputs
+    for (let output of transaction.outputs) {
+      outputSum += output.amount;
+    }
+
+    if (inputSum < outputSum) {
+      console.log("Invalid transaction: outputs exceed inputs");
+      return false;
+    }
+
+    return true;
+  }
+
   // Method to process a transaction (placeholder for actual logic)
-//   processTransaction(transaction) {
-    // Implement transaction validation and processing logic
-    // This will involve updating the UTXO set or other relevant state
-//   }
+  //   processTransaction(transaction) {
+  // Implement transaction validation and processing logic
+  // This will involve updating the UTXO set or other relevant state
+  //   }
 }
 
 export default Ledger;
