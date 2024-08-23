@@ -1,5 +1,3 @@
-// mempool.js
-
 class Mempool {
   constructor() {
     this.transactions = [];
