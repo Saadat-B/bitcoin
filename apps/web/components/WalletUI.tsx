@@ -3,13 +3,14 @@
 
 import { useState } from "react";
 
-interface WalletUIProps {
+type Wallet = {
   publicKey: string;
   privateKey: string;
   bitcoinAddress: string;
-}
+};
 
 export default function WalletUI() {
+  const [wallets, setWallets] = useState<Wallet[]>([]);
   const [keys, setKeys] = useState({
     publicKey: "sdfasdf",
     privateKey: "sdfsadfsadf",
@@ -20,16 +21,60 @@ export default function WalletUI() {
     const response = await fetch("/api/generateKeys");
     const newKeys = await response.json();
     setKeys(newKeys);
+
+    setWallets((prev) => [...prev, newKeys]);
   };
+
   return (
-    <div>
-      <button onClick={handleClick}>Create Wallet</button>
-      <h2>Public Key</h2>
-      <pre>{keys?.publicKey}</pre>
-      <h2>Private Key</h2>
-      <pre>{keys?.privateKey}</pre>
-      <h2>Bitcoin Address</h2>
-      <pre>{keys?.bitcoinAddress}</pre>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      <button
+        style={{
+          width: "50%",
+          padding: "20px",
+          margin: "20px ",
+          fontSize: "40px",
+        }}
+        onClick={handleClick}
+      >
+        Create Wallet
+      </button>
+      <br />
+
+      {wallets.map((wallet) => (
+        <div
+          style={{
+            fontSize: "20px",
+            wordWrap: "break-word", // Use wordWrap instead of textWrap
+            width: "100%",
+            display: "flex",
+            flexDirection: "column",
+            border: "1px solid red",
+            marginBottom: "10px",
+            padding: "5px",
+          }}
+        >
+          <h2>Public Key</h2>
+          <div>{wallet?.publicKey}</div>
+          <h2>Private Key</h2>
+          <div
+            style={{
+              wordWrap: "break-word", // Use wordWrap instead of textWrap
+            }}
+          >
+            {wallet?.privateKey}
+          </div>
+          <h2>Bitcoin Address</h2>
+          <div>{wallet?.bitcoinAddress}</div>
+          <br />
+        </div>
+      ))}
     </div>
   );
 }

@@ -5,7 +5,11 @@ import WalletUI from "../../components/WalletUI";
 
 export default function ClientComponent() {
   return (
-    <div>
+    <div
+      style={{
+        margin: "10px 100px",
+      }}
+    >
       <WalletUI />
     </div>
   );
