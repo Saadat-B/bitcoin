@@ -55,7 +55,7 @@ export default function WalletUI() {
             width: "100%",
             display: "flex",
             flexDirection: "column",
-            border: "1px solid red",
+            border: "1px solid white",
             marginBottom: "10px",
             padding: "5px",
           }}
